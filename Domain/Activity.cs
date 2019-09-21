@@ -11,6 +11,6 @@ namespace Domain
         public DateTime Date { get; set; }
         public String City { get; set; }
         public String Venue { get; set; }
-        //public DateTime InsertedOn { get; set; }  /* erwin add */
+        
     }
 }

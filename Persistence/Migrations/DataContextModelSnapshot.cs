@@ -29,8 +29,6 @@ namespace Persistence.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<DateTime>("InsertedOn");
-
                     b.Property<string>("Title");
 
                     b.Property<string>("Venue");

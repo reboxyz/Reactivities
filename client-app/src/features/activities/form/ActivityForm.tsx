@@ -8,10 +8,11 @@ interface IProps {
     activity: IActivity | null;
     createActivity: (activity: IActivity) => void;
     editActivity: (activity: IActivity) => void;
+    submitting: boolean;
 }
 
 // Note! activity is alias to 'initialFormState'
-const ActivityForm: React.FC<IProps> = ({setEditMode, activity: initialFormSate, createActivity, editActivity }) => {
+const ActivityForm: React.FC<IProps> = ({setEditMode, activity: initialFormSate, createActivity, editActivity, submitting }) => {
     const initializeForm = () => {
         if (initialFormSate) {
             return initialFormSate;
@@ -87,7 +88,7 @@ const ActivityForm: React.FC<IProps> = ({setEditMode, activity: initialFormSate,
                     placeholder='Venue' 
                     value={activity.venue} 
                 />
-                <Button floated='right' positive type='submit' content='Submit' />
+                <Button loading={submitting} floated='right' positive type='submit' content='Submit' />
                 <Button 
                     onClick={() => setEditMode(false)} 
                     floated='right'  
