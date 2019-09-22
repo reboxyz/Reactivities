@@ -40,10 +40,20 @@ namespace Application.Activities
                 activity.City = request.City ?? activity.City;
                 activity.Venue = request.Venue ?? activity.Venue;
 
+                /* Bug correspondence: If there is no edited property, there is no affected record. Thus, success if false and throws Exception. 
                 var success = await _context.SaveChangesAsync() > 0;
 
                 if (success) return Unit.Value;  // 200 OK response
                 throw new Exception("Problem saving changes");
+                */
+
+                try {
+                   await _context.SaveChangesAsync();
+                   return Unit.Value;  // 200 OK response 
+                }catch(Exception ex)
+                {
+                    throw new Exception("Problem saving changes", ex);
+                }
             }
         }
     }
