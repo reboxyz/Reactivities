@@ -1,36 +1,44 @@
-import React, { useState, FormEvent, useContext } from 'react'
+import React, { useState, FormEvent, useContext, useEffect } from 'react'
 import { Segment, Form, Button } from 'semantic-ui-react'
 import { IActivity } from '../../../app/models/activity'
 import { v4 as uuid}  from 'uuid';
 import ActivityStore from '../../../app/stores/activityStore';
 import { observer } from 'mobx-react-lite';
+import { RouteComponentProps } from 'react-router';
 
-interface IProps {
-    activity: IActivity | null;
+interface DetailParams {
+    id: string
 }
 
-// Note! activity is alias to 'initialFormState'
-const ActivityForm: React.FC<IProps> = ({activity: initialFormSate}) => {
+const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({match, history}) => {
     const activityStore = useContext(ActivityStore);
-    const {createActivity, editActivity, submitting, cancelFormOpen} = activityStore;
+    const {createActivity, editActivity, submitting, activity: initialFormSate, loadActivity, clearActivity } = activityStore;
+    
+    const [activity, setActivity] = useState<IActivity>({
+        id: '',                 // Note! The object must match with the property defined in IActivity type
+        title: '',
+        category: '',
+        description: '',
+        date: '', 
+        city: '', 
+        venue: ''
+    });
 
-    const initializeForm = () => {
-        if (initialFormSate) {
-            return initialFormSate;
-        } else {
-            return {
-                id: '',                 // Note! The object must match with the property defined in IActivity type
-                title: '',
-                category: '',
-                description: '',
-                date: '', 
-                city: '', 
-                venue: ''
-            };
+    // If params 'id' is set then retrieve from API
+    useEffect(() => {
+        if (match.params.id && activity.id.length === 0) { 
+            // Note! id.length checking is to avoid memory leak warning. This will manifest when we edit the Details and redisplay the details
+            loadActivity(match.params.id).then(() => {
+                initialFormSate && setActivity(initialFormSate);
+                console.log('useEffect called with activity details');
+            });
+        }   
+        // useEffect with cleanUp method which is equivalent to the UnMount React Class Component
+        return () => {
+            clearActivity();
         }
-    }
+    },[loadActivity, clearActivity, match.params.id, initialFormSate, activity.id.length]);  // Note! Second param is the set of dependencies in the useEffect
 
-    const [activity, setActivity] = useState<IActivity>(initializeForm());
     const handleInputChange = (event: FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = event.currentTarget;
         setActivity({...activity, [name]: value });
@@ -42,9 +50,9 @@ const ActivityForm: React.FC<IProps> = ({activity: initialFormSate}) => {
                 ...activity,
                 id: uuid()
             };
-            createActivity(newActivity);
+            createActivity(newActivity).then(() => history.push(`/activities/${newActivity.id}`));
         } else {
-            editActivity(activity);
+            editActivity(activity).then(() => history.push(`/activities/${activity.id}`));;
         }
     }
 
@@ -91,7 +99,7 @@ const ActivityForm: React.FC<IProps> = ({activity: initialFormSate}) => {
                 />
                 <Button loading={submitting} floated='right' positive type='submit' content='Submit' />
                 <Button 
-                    onClick={() => cancelFormOpen()} 
+                    onClick={() => history.push('/activities')} 
                     floated='right'  
                     type='button' 
                     content='Cancel' />
