@@ -26,6 +26,7 @@ namespace Application.User
 
             public async Task<User> Handle(Query request, CancellationToken cancellationToken)
             {
+                // Retrieve AppUser using the userName in the JWT embeded as Claim
                 var user = await _userManager.FindByNameAsync(_userAccessor.GetCurrentUsername());
                 return new User 
                 {
