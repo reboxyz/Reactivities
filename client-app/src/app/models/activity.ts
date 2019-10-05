@@ -6,6 +6,9 @@ export interface IActivity {
     date: Date; 
     city: string;
     venue: string;
+    isGoing: boolean;   // Note! This refers to the current login User if he is going to the activity
+    isHost: boolean;    // Note! This refers to the current login User if he is hosting the activity
+    attendees: IAttendee[];
 }
 
 export interface IActivityFormValues extends Partial<IActivity> {
@@ -30,4 +33,11 @@ export class ActivityFormValues implements IActivityFormValues {
 
         Object.assign(this, init);
     }
+}
+
+export interface IAttendee {
+    username: string;
+    displayName: string;
+    image: string;
+    isHost: boolean;
 }
