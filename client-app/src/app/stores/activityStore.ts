@@ -6,6 +6,7 @@ import { history } from '../../index';
 import { toast } from 'react-toastify';
 import { RootStore } from './rootStore';
 import { setActivityProps, createAttendee } from '../common/util/util';
+import {HubConnection, HubConnectionBuilder, LogLevel} from '@aspnet/signalr';
 
 export default class ActivityStore {
     rootStore: RootStore;
@@ -21,6 +22,44 @@ export default class ActivityStore {
     @observable submitting = false;
     @observable target = '';
     @observable loading = false;
+    @observable.ref hubConnection: HubConnection | null = null;   // Note! Observing only the Reference and not the value
+
+    @action createHubConnection = () => {
+        this.hubConnection = new HubConnectionBuilder()
+            .withUrl('http://localhost:5000/chat', {
+                accessTokenFactory: () => this.rootStore.commonStore.token!
+            })
+            .configureLogging(LogLevel.Information)
+            .build();
+
+        this.hubConnection
+        .start()
+        .then(() => console.log(this.hubConnection!.state))
+        .catch(error => console.log('Error establishing connection', error));
+
+        // Handler when a message/comment is received. Note! "ReceiveComment" should be equal with what is set in the ChatHub.cs
+        this.hubConnection.on("ReceiveComment", comment => {
+            runInAction(() => {
+                this.activity!.comments.push(comment);
+            });
+        });
+    }
+
+    @action stopHubConnection = () => {
+        this.hubConnection!.stop();
+    }
+
+    // Note! values came from Form input and should be identical with Application.Comments.Create.Command object
+    @action addComment = async (values: any) => {
+        values.activityId = this.activity!.id;
+        try {
+            // Should match the 'SendComment' method from API.SignalR.ChatHub.SendComment.
+            // This is effectively invoking the server method from the client
+            await this.hubConnection!.invoke('SendComment', values)
+        }catch(error) {
+            console.log(error);
+        }
+    }
 
     @computed get activitiesByDate() {
         return this.groupActivitiesByDate(Array.from(this.activityRegistry.values()));
@@ -120,6 +159,7 @@ export default class ActivityStore {
             let attendees: IAttendee[] = [];
             attendees.push(attendee);
             activity.attendees = attendees;
+            activity.comments = [];
             activity.isHost = true;
 
             runInAction('creating activity', () => {

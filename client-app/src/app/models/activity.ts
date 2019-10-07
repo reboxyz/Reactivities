@@ -9,6 +9,16 @@ export interface IActivity {
     isGoing: boolean;   // Note! This refers to the current login User if he is going to the activity
     isHost: boolean;    // Note! This refers to the current login User if he is hosting the activity
     attendees: IAttendee[];
+    comments: IComment[];
+}
+
+export interface IComment {
+    id: string;
+    createdAt: Date;
+    body: string;
+    username: string;
+    displayName: string;
+    image: string;
 }
 
 export interface IActivityFormValues extends Partial<IActivity> {

@@ -12,7 +12,7 @@ namespace Domain
         public DateTime Date { get; set; }
         public String City { get; set; }
         public String Venue { get; set; }
-        
         public virtual ICollection<UserActivity> UserActivities { get; set; } // Note! virtual is essential for lazy loading
+        public virtual ICollection<Comment> Comments { get; set; }
     }
 }
