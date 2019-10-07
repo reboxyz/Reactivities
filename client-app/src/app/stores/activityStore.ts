@@ -6,7 +6,6 @@ import { history } from '../../index';
 import { toast } from 'react-toastify';
 import { RootStore } from './rootStore';
 import { setActivityProps, createAttendee } from '../common/util/util';
-import { async } from 'q';
 
 export default class ActivityStore {
     rootStore: RootStore;

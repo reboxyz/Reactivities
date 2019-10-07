@@ -29,3 +29,9 @@ export const combineDateAndTime = (date: Date, time: Date) => {
          image: user.image!
      };
  }
+
+ export const convertImageUrlToBlob = async (fileUrl: any): Promise<Blob> => {
+    const response = await fetch(fileUrl);
+    const blob = await response.blob();
+    return blob;
+ }
