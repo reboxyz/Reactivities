@@ -3,6 +3,8 @@ using Application.Profiles;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Application.Photos;
+using System.Collections.Generic;
+using Application.Followers;
 
 namespace API.Controllers
 {
@@ -18,5 +20,9 @@ namespace API.Controllers
             return await Mediator.Send(command);
         }
        
+        [HttpGet("{username}/follow")]
+        public async Task<ActionResult<List<Profile>>> GetFollowings(string username, string predicate) {
+            return await Mediator.Send(new List.Query{ Username = username, Predicate = predicate });
+        }
     }
 }

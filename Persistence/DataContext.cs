@@ -16,6 +16,7 @@ namespace Persistence
         public DbSet<UserActivity> UserActivities { get; set; }
         public DbSet<Photo> Photos { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<UserFollowing> Followings { get; set; }  // Note! This is the table definition for 'following and followers' AppUser
 
 
         protected override void OnModelCreating(ModelBuilder builder) {
@@ -43,6 +44,23 @@ namespace Persistence
                 .HasOne(a => a.Activity)
                 .WithMany(u => u.UserActivities)
                 .HasForeignKey(a => a.ActivityId);
+
+            // Define the Primary Key of 'UserFollowing' Entity
+            builder.Entity<UserFollowing>(b => {
+                b.HasKey(k => new { k.ObserverId, k.TargetId });
+
+                // Define the first half of the relationship 'Observer' in relation to AppUser of many-to-many self-referencing entity
+                b.HasOne(o => o.Observer)
+                    .WithMany(f => f.Followings)
+                    .HasForeignKey(o => o.ObserverId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // Define the second half of the relationship 'Target' in relation to AppUser of many-to-many self-referencing entity
+                b.HasOne(o => o.Target)
+                    .WithMany(f => f.Followers)
+                    .HasForeignKey(o => o.TargetId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
 
         }
     }
