@@ -39,7 +39,7 @@ namespace API
         public void ConfigureDevelopmentServices(IServiceCollection services) {
               services.AddDbContext<DataContext>(opt => {
                 opt.UseLazyLoadingProxies();
-                opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+                opt.UseSqlite(Configuration.GetConnectionString("DefaultConnectionLocalMac"));
             });
 
             ConfigureServices(services);
@@ -48,8 +48,8 @@ namespace API
         public void ConfigureProductionServices(IServiceCollection services) {
               services.AddDbContext<DataContext>(opt => {
                 opt.UseLazyLoadingProxies();
-                opt.UseMySql(Configuration.GetConnectionString("DefaultConnection"));
-                //opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                //opt.UseMySql(Configuration.GetConnectionString("DefaultConnection"));
+                opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
 
             ConfigureServices(services);
@@ -141,10 +141,9 @@ namespace API
             else
             {
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                //app.UseHsts();
+                app.UseHsts();
             }
 
-                 
             // Security Headers setting must be defined at the top of the Middleware chain
             app.UseXContentTypeOptions(); // To prevent content sniffing
             app.UseReferrerPolicy(opt => opt.NoReferrer()); // To limit information when referring sites

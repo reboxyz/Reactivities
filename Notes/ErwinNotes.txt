@@ -1,0 +1,134 @@
+Complete guide to building an app with .Net Core and React
+
+1 - 1, 2, 3, 4,
+2 - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+3 - 1, 2, 3, 4, 5, 6, 7?, 8, 9, 10, 11, 12, 13, 14, 15, 16
+4 - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 
+5 - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21
+6 - 1, 2, 3, 4, 5, 6, 7, 8, 9
+7 - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+8 - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+9 - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+10 - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+11 - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+12 - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,  11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
+13 - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+14 -1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 
+15 - 1, 2, 3, 4, 5, 6, 7, 8, 9, 
+16 - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+17 - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12?, 13,  14, 15, 16, 17, 18
+18 - 1, 2
+19 - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+20 - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12?, 13,  14
+21 - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 
+22 - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 
+
+
+
+
+Notes!
+dotnet new sln
+dotnet new classlib -n Domain
+dotnet new classlib -n Application
+dotnet new classlib -n Persistence
+dotnet new webapi -n API
+dotnet sln add Domain/
+dotnet sln add Application/
+dotnet sln add Persitence/
+dotnet sln add API/
+dotnet sln list
+cd Application   Note! Application depends on Domain and Persistence
+dotnet add reference ../Domain/
+dotnet add reference ../Persistence/
+cd API
+dotnet add reference ../Application/   Note! API project depends on Application
+cd Persistence
+dotnet add reference ../Domain/  Note! Persistence depends on Domain
+dotnet run -p API/
+
+dotnet ef migrations add InitialCreate -p Persistence/ -s API/
+dotnet watch run
+dotnet ef migrations add SeedValues -p Persistence/ -s API/
+
+npx create-react-app client-app --use-npm --typescript
+
+CSS Framework: Semantic UI
+
+dotnet ef migrations add "ActivityEntityAdded" -p Persistence/ -s API/    Note! -p is for Project containing the DataContext and -s is for Starter Project
+
+CQRS = Command Query Responsibility Segregation
+
+Snippet Generator
+https://snippet-generator.app/
+
+dotnet ef database drop  -p Persistence -s API/
+
+git add .
+git commit -m “add blahs”
+git push origin master
+
+fully uncontrolled component with a key
+
+dotnet tool install -g dotnet-ef --version 2.2.0-*
+
+Note! Migration command should be run in the Solution folder
+dotnet ef migrations add “AddedIdentity” -p Persistence/ -s API/
+
+dotnet new classlib -n Infrastructure
+dotnet sln add Infrastructure/
+cd Infrastructure
+dotnet add reference ../Application/
+cd ../API
+dotnet add reference ../Infrastructure/
+
+dotnet user-secrets
+
+<UserSecretsId>6b945ef6-c2b6-40b0-b802-81e8a50516f8</UserSecretsId>
+dotnet user-secrets set "TokenKey" "super secret key" -p API/
+
+dotnet ef migrations add "UserActivityAdded" -p Persistence/ -s API/
+
+cd API
+dotnet user-secrets set "Cloudinary:CloudName" "dkjmkcrmb"
+dotnet user-secrets set "Cloudinary:ApiKey" "972498388219399"
+dotnet user-secrets set "Cloudinary:ApiSecret" "FyibB5OSUCMg7hqfkOrlhdPIfIA"
+
+dotnet ef migrations add "PhotoEntityAdded" -p Persistence/ -s API/
+dotnet ef migrations add "AddedCommentEntity" -p Persistence/ -s API/
+dotnet ef migrations add "AddedFollowingEntity" -p Persistence/ -s API/
+
+Note! In publishing the app, our “client-app” build result will be hosted in the “API” project under this path “API/wwwroot/“. Or simply, our “client-app” is served in our “API” Server.
+
+CREATE USER 'appuser'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Pa$$w0rd';
+GRANT ALL PRIVILEGES ON *.* TO 'appuser'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+dotnet publish -c Release -o publish --self-contained false Reactivities.sln
+
+1.21.14.145
+https://winnuxreactivities.azurewebsites.net/
+
+Server=tcp:winnuxreactivities.database.windows.net,1433;Initial Catalog=reactivities;Persist Security Info=False;User ID=appuser;Password=Pa$$w0rd;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
+
+TroubleShooting:
+HTTP Error 500.30 - ANCM In-Process Start Failure #8980
+This work for me
+In the file MyProject.csproj
+I Change this line <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+For this <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
+I'm looking for a better solution...
+
+https://winnuxreactivities.azurewebsites.net/
+
+
+
+
+
+
+
+
+
+
+
+
+
