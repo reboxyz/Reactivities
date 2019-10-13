@@ -1,4 +1,4 @@
-import { observable, action, computed, runInAction, reaction } from 'mobx';
+import { observable, action, computed, runInAction, reaction, toJS } from 'mobx';
 import { SyntheticEvent } from 'react';
 import { IActivity, IAttendee } from '../models/activity';
 import agent from '../api/agent';
@@ -71,7 +71,7 @@ export default class ActivityStore {
 
     @action createHubConnection = () => {
         this.hubConnection = new HubConnectionBuilder()
-            .withUrl('http://localhost:5000/chat', {
+            .withUrl(process.env.REACT_APP_API_CHAT_URL!, {
                 accessTokenFactory: () => this.rootStore.commonStore.token!
             })
             .configureLogging(LogLevel.Information)
@@ -167,8 +167,10 @@ export default class ActivityStore {
         const user = this.rootStore.userStore.user!; // Get current logged-in user
 
         if (activity) {
-            this.activity = activity;
-            return activity;    // Note! Explicitly return activity to be used in the useState
+            this.activity = activity; // Note! This activity is an observable. The one returned directly from the API is not observable.
+            // Very important Note!!! Return an ordinary activity object that is not an observable thru toJS coz the object will be used in initializing the form which 
+            // should not be an observable.
+            return toJS(activity);    // Note! Explicitly return activity to be used in the useState
         } else {
             this.loadingInitial = true;
             try {
